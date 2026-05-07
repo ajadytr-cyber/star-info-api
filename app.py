@@ -302,24 +302,16 @@ def refresh_tokens_endpoint():
         return jsonify({'error': str(e)}), 500
 
 
-# -------------- async Startup --------------
+# === Startup ===
 
-started = False
+async def startup():
+    await initialize_tokens()
+    asyncio.create_task(refresh_tokens_periodically())
 
-def start_background_loop():
-    global started
-    if started:
-        return
-    started = True
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-
-    loop.run_until_complete(initialize_tokens())
-    loop.create_task(refresh_tokens_periodically())
-    loop.run_forever()
-
-threading.Thread(target=start_background_loop, daemon=True).start()
+if __name__ == '__main__':
+    asyncio.run(startup())
+    app.run(host='0.0.0.0', port=5001, debug=True)
 # INFO API SRC BYY 
 # POWERED BY : @STAR_GMR
+# CHANNEL : @STAR_METHODE
 # CHANNEL : @STAR_METHODE
